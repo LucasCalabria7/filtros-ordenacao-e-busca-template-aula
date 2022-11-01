@@ -3,6 +3,9 @@ import pokemons from "./pokemon/pokemon.json";
 import PokemonCard from "./components/PokemonCard/PokemonCard";
 import { getColors } from "./utils/ReturnCardColor";
 import Header from "./components/Header/Header.js";
+import {useState} from 'react'
+
+
 const GlobalStyle = createGlobalStyle`
   *{
     padding: 0;
@@ -18,12 +21,43 @@ const CardsContainer = styled.div`
   justify-items: center;
 `;
 function App() {
+  const [buscaId, setBuscaId] = useState("")
+  const [buscaNome, setBuscaNome] = useState("")
+  const [ordenaNome, setOrdenaNome] = useState("")
+  const [ordenaTipo, setOrdenaTipo] = useState("")
+
   return (
     <>
       <GlobalStyle />
-      <Header />
+      <Header 
+      buscaId={buscaId}
+      setBuscaId={setBuscaId}
+      buscaNome={buscaNome}
+      setBuscaNome={setBuscaNome}
+      ordenaNome={ordenaNome}
+      setOrdenaNome={setOrdenaNome}
+      ordenaTipo={ordenaTipo}
+      setOrdenaTipo={setOrdenaTipo}
+      />
       <CardsContainer>
-        {pokemons.map((pokemon) => {
+        {pokemons
+        .filter((pokemon) =>{
+          return pokemon.id.includes(buscaId)
+        })
+        .filter((pokemon) => {
+          return pokemon.name.english.toLowerCase().includes(buscaNome.toLowerCase())
+        })
+        .sort((a, b)=> {
+          if(ordenaNome === 'crescente') {
+            return a.name.english < b.name.english ? -1 : 1
+          } else if (ordenaNome === 'decrescente') {
+            return a.name.english > b.name.english ? -1 : 1
+          }
+        })
+        .filter((pokemon) => {
+          return ordenaTipo ? pokemon.type.includes(ordenaTipo) : pokemon
+        })
+        .map((pokemon) => {
           return <PokemonCard
           cardColor={getColors(pokemon.type[0])}
           key={pokemon.id}
